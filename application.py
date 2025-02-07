@@ -25,10 +25,12 @@ class Book(db.Model):
     def __repr__(self):
         return f"{self.bookName}, {self.bookAuthor}, {self.bookPublisher}"
 
+# serves as a "homepage"
 @app.route('/')
 def index():
     return 'Hello!'
 
+# goes to the books directory and lists all the books in the database
 @app.route('/books')
 def get_books():
     theBooks = Book.query.all()
@@ -38,17 +40,20 @@ def get_books():
         output.append(book_data)
     return {"books ": output}
 
+# finds a particular book by id and shows only that book or a 404 error if the book id does not exist
 @app.route('/books/<id>')
 def get_book(id):
     book = Book.query.get_or_404(id)
     return {"Book Name": book.bookName, "Book Author": book.bookAuthor, "Book Publisher": book.bookPublisher}
 
+# adds a new book to the database
 @app.route('/books', methods=['POST'])
 def add_book():
     book = Book(bookName=request.json["bookName"], bookAuthor=request.json["bookAuthor"], bookPublisher=request.json["bookPublisher"])
     db.session.add(book)
     db.session.commit()
 
+# deletes a book from the database, if it exists
 @app.route('/books/<id>', method=['DELETE'])
 def delete_book(id):
     book = Book.query.get(id)
